@@ -18,6 +18,23 @@ app.get('/users', async(req, res) => {
     res.send(list);
 });
 
+//login
+app.post('/login', async(req, res) => {
+    const data = req.body;
+    const username = data.username;
+    const password = data.password;
+
+    const snapshot = await User.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username && list[i].password == password){
+            res.send({msg: "User Login"});   
+        }
+    }
+    res.status(400).send({msg: "Username does not match password"})
+});
+
 //register user
 app.post('/register', async(req, res) => {
     const data = req.body;
