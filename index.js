@@ -22,7 +22,7 @@ app.get('/users', async(req, res) => {
 app.post('/login', async(req, res) => {
     const data = req.body;
     if (!data.email || !data.password){
-        res.status(418).send({msg: "Need email and password"})
+        res.status(418).send({msg: "Need email and password"});
     }
 
     const email = data.email;
@@ -31,12 +31,17 @@ app.post('/login', async(req, res) => {
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
+    const aux =0
     for (let i = 0; i < list.length; i++) {
         if (list[i].email == email && list[i].password == password){
-            res.send({msg: "User Acepted"});   
+            res.send({msg: "User Acepted"});
+            aux = 1
         }
     }
-    res.status(400).send({msg: "Email does not match password"})
+    if (aux == 0){
+        res.status(400).send({msg: "Email does not match password"});
+    }
+    
 });
 
 //register user
