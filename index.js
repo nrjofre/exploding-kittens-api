@@ -21,6 +21,7 @@ app.get('/users', async(req, res) => {
 //login
 app.post('/login', async(req, res) => {
     const data = req.body;
+    console.log(req.body);
     if (!data.email || !data.password){
         return res.status(418).send({msg: "Need email and password"});
     }
