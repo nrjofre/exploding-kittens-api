@@ -40,15 +40,15 @@ app.post('/register', async(req, res) => {
     console.log("body");
     console.log(req.body);
     console.log("body");
-    const {email, username, password } = req.body;
-    const data = {
+    const data = req.body;
+    /*const data = {
                     "email": email,
                     "username": username,
                     "password": password,
                     "total_matches": 0,
                     "winrate": 100,
                     "friends": [],
-                 }
+                 }*/
 
     await User.add(data);
     res.send({msg: "User Registered"});    
