@@ -31,7 +31,7 @@ app.post('/login', async(req, res) => {
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
-    const aux =0
+    var aux = 0
     for (let i = 0; i < list.length; i++) {
         if (list[i].email == email && list[i].password == password){
             res.send({msg: "User Acepted"});
