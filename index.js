@@ -31,18 +31,11 @@ app.post('/login', async(req, res) => {
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
-    let aux = 0
     for (let i = 0; i < list.length; i++) {
         if (list[i].email == email && list[i].password == password){
             res.send({msg: "User Acepted"});
-            aux = 1
         }
     }
-    
-    if (aux == 0){
-        res.status(400).send({msg: "Email does not match password"});
-    }
-    
 });
 
 //register user
