@@ -18,6 +18,22 @@ app.get('/users', async(req, res) => {
     return res.send({users: list});
 });
 
+//get friends
+app.get('/friends/:username', async(req, res) => {
+    const { username } = req.params;
+    const snapshot = await User.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            const friends = list[i].friends
+            return res.send({friends: friends});
+        }
+    }
+
+    return res.send({msg: "User not found"});
+});
+
 //login
 app.post('/login', async(req, res) => {
     const data = req.body;
