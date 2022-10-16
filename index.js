@@ -97,6 +97,44 @@ app.post('/update', async(req, res) => {
     return res.send({msg: "User Updated"});    
 });
 
+//add friend
+app.post('/addfriend', async(req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    const username = req.body.username
+    delete req.body.id;
+
+    const snapshot = await User.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var friends;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].id == id){
+            friends = list[i].friends
+        }
+    } 
+
+    if (friends == null){
+        return res.status(418).send({msg: "No friends"});
+    }
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+
+            friends.push(list[i].id)
+
+            const data = {friends: friends}
+
+            await User.doc(id).update(data)
+
+            return res.send({msg: "Friend Added"});
+        }
+    } 
+
+    return res.status(418).send({msg: "ID not found"});    
+});
+
 //delete user
 app.post('/delete', async(req, res) => {
     console.log(req.body);
