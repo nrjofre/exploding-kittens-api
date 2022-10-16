@@ -25,14 +25,23 @@ app.get('/friends/:username', async(req, res) => {
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
+    var friends;
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
-            const friends = list[i].friends
-            return res.send({friends: friends});
+            friends = list[i].friends;
         }
     }
 
-    return res.send({msg: "User not found"});
+    var list2 = [];
+    for (let i = 0; i < list.length; i++) {
+        for (let j = 0; j < friends.length; j++) {
+            if (friends[j] == list[i].id){
+                var friend = list[i];
+                list2.push(friend)
+            }
+        }
+    }
+    return res.send({friends: list2});
 });
 
 //login
