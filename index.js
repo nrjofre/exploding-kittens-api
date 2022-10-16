@@ -44,7 +44,7 @@ app.get('/friends/:username', async(req, res) => {
             }
         }
     }
-    return res.send({list2});
+    return res.send(list2);
 });
 
 //login
