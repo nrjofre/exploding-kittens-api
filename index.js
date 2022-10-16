@@ -31,6 +31,9 @@ app.get('/friends/:username', async(req, res) => {
             friends = list[i].friends;
         }
     }
+    if (friends == null){
+        return res.status(418).send({msg: "No friends"});
+    }
 
     var list2 = [];
     for (let i = 0; i < list.length; i++) {
