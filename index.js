@@ -54,7 +54,7 @@ app.get('/friends/:username', async(req, res) => {
 
 //get not friends
 app.get('/notfriends/:username', async(req, res) => {
-    console.log(req.params);
+    //console.log(req.params);
     const { username } = req.params;
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
@@ -74,14 +74,16 @@ app.get('/notfriends/:username', async(req, res) => {
 
     var list2 = [];
     for (let i = 0; i < list.length; i++) {
-        for (let j = 0; j < friends.length; j++) {
-            if (list[i].username == username){
-                continue;
-            }
-            else if (friends[j] != list[i].id){
-                var friend = list[i];
-                list2.push(friend)
-            }
+        if (list[i].username == username){
+            continue;
+        }
+
+        if (friends.includes(list[i].id)){
+            continue;
+        }
+        else{
+            var friend = list[i];
+            list2.push(friend)
         }
     }
     return res.send(list2);
@@ -349,8 +351,7 @@ app.get('/matches/:username', async(req, res) => {
             if (list[i].participants[j] == username){
                 matches.push(list[i]);
             }
-        }
-        
+        }  
     }
     return res.send(matches);
 });
