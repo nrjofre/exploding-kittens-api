@@ -13,6 +13,7 @@ app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
 
 const User = db.collection('Users')
 const FriendInvite = db.collection('FriendInvites')
+const AvailableMatch = db.collection('AvailableMatches')
 const MatchInvite = db.collection('MatchInvites')
 
 //get all users
@@ -148,7 +149,7 @@ app.post('/delete', async(req, res) => {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//create finvite
+//create friend invite
 app.post('/finvite', async(req, res) => {
     console.log(req.body);
     const invitor = req.body.invitor;
@@ -160,7 +161,7 @@ app.post('/finvite', async(req, res) => {
     return res.send({msg: "Friend Invite Created"});   
 });
 
-//accept finvite
+//accept friend invite
 app.post('/acceptfinvite', async(req, res) => {
     const id = req.body.id;
     delete req.body.id;
@@ -213,7 +214,7 @@ app.post('/acceptfinvite', async(req, res) => {
     return res.send({msg: "Friend Request Accepted"});
 });
 
-//reject finvite
+//reject friend invite
 app.post('/deletefinvite', async(req, res) => {
     console.log(req.body);
     const id = req.body.id;
@@ -221,11 +222,105 @@ app.post('/deletefinvite', async(req, res) => {
     return res.send({msg: "Invite Rejected"});      
 });
 
-//get invites
+//get friend invites
 app.get('/finvite/:username', async(req, res) => {
     console.log(req.params);
     const { username } = req.params;
     const snapshot = await FriendInvite.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var invites = [];
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].invited == username){
+            invites.push(list[i]);
+        }
+    }
+    return res.send(invites);
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//create match
+app.post('/creatematch', async(req, res) => {
+    console.log(req.body);
+    const creator = req.body.creator;
+    const settings = req.body.settings;
+    const data = {creator: creator, settings: settings}
+
+    await AvailableMatch.add(data);
+
+    return res.send({msg: "Match Created"});
+});
+
+//create match invite
+app.post('/minvite', async(req, res) => {
+    console.log(req.body);
+    const invitor = req.body.invitor;
+    const invited = req.body.invited;
+    const matchid = req.body.matchid;
+    const data = {matchid: matchid, invited: invited, invitor: invitor}
+
+    await MatchInvite.add(data);
+
+    return res.send({msg: "Match Invite Created"});   
+});
+
+//accept match invite
+app.post('/acceptminvite', async(req, res) => {
+    const id = req.body.id;
+    delete req.body.id;
+
+    const snapshot = await MatchInvite.get();
+    const snapshot2 = await User.get();
+    
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var id1;
+    var matchid;
+    var matches;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].id == id){
+            matchid = list[i].matchid
+            const user = list[i].invited;
+
+            for (let j = 0; j < list2.length; j++) {
+                if (list2[j].username == user2){
+                    matches = list2[j].matches;
+                    id1 = list2[j].id;
+                }
+            }
+        }
+    }
+
+    if (id1 == null){
+        return res.status(418).send({msg: "Invalid Invite"}); 
+    }
+
+    matches.push(matchid);
+
+    const data = {matches: matches}
+
+    await User.doc(id1).update(data);
+
+    await MatchInvite.doc(id).delete();
+
+    return res.send({msg: "Match Request Accepted"});
+});
+
+//reject match invite
+app.post('/deleteminvite', async(req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    await MatchInvite.doc(id).delete();
+    return res.send({msg: "Match Invite Rejected"});      
+});
+
+//get match invites
+app.get('/minvite/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    const snapshot = await MatchInvite.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var invites = [];
