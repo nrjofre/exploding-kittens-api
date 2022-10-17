@@ -252,7 +252,18 @@ app.post('/creatematch', async(req, res) => {
 
     await AvailableMatch.add(data);
 
-    return res.send({msg: "Match Created"});
+    const snapshot = await AvailableMatch.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var message;
+
+    for (let i = 0; i < list.length; i++) {
+        if(list[i].creator == creator && settings == settings){
+            message = list[i].id
+        }
+    }
+
+    return res.send({msg: message});
 });
 
 //create match invite
