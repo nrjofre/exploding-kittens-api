@@ -345,7 +345,7 @@ app.get('/matches/:username', async(req, res) => {
 
     var matches = [];
     for (let i = 0; i < list.length; i++) {
-        for (let j = 0; j < list[i].length; j++) {
+        for (let j = 0; j < list[i].participants.length; j++) {
             if (list[i].participants[j] == username){
                 matches.push(list[i]);
             }
