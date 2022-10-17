@@ -244,26 +244,16 @@ app.get('/finvite/:username', async(req, res) => {
 //create match
 app.post('/creatematch', async(req, res) => {
     console.log(req.body);
+    const gamename = req.body.gamename
     const creator = req.body.creator;
     const settings = req.body.settings;
     const participants = req.body.participants;
 
-    const data = {creator: creator, participants: participants, settings: settings}
+    const data = {gamename: gamename,creator: creator, participants: participants, settings: settings}
 
     await AvailableMatch.add(data);
 
-    const snapshot = await AvailableMatch.get();
-    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
-
-    var message;
-
-    for (let i = 0; i < list.length; i++) {
-        if(list[i].creator == creator && settings == settings){
-            message = list[i].id
-        }
-    }
-
-    return res.send({msg: message});
+    return res.send({msg: "Match Created"});
 });
 
 //create match invite
@@ -271,8 +261,22 @@ app.post('/minvite', async(req, res) => {
     console.log(req.body);
     const invitor = req.body.invitor;
     const invited = req.body.invited;
-    const matchid = req.body.matchid;
-    const data = {matchid: matchid, invited: invited, invitor: invitor}
+    const gamename = req.body.gamename;
+
+    const snapshot = await AvailableMatch.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var matchid;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].gamename == gamename){
+            matchid = list[i].id
+            break
+        }
+    }
+
+
+    const data = {matchid: matchid, gamename: gamename, invited: invited, invitor: invitor}
 
     await MatchInvite.add(data);
 
