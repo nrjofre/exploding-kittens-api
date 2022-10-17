@@ -287,7 +287,7 @@ app.post('/acceptminvite', async(req, res) => {
             const user = list[i].invited;
 
             for (let j = 0; j < list2.length; j++) {
-                if (list2[j].username == user2){
+                if (list2[j].username == user){
                     matches = list2[j].matches;
                     id1 = list2[j].id;
                 }
