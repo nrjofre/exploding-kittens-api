@@ -13,5 +13,12 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const User = db.collection("Users");
-module.exports = User;
+module.exports = db;
+
+//const User = db.collection('Users');
+//const FriendInvite = db.collection('Friend Invites');
+//const MatchInvites = db.collection("Match Invites");
+
+
+//module.exports = FriendInvite;
+//module.exports = MatchInvites;
