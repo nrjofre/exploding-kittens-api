@@ -335,3 +335,22 @@ app.get('/minvite/:username', async(req, res) => {
     }
     return res.send(invites);
 });
+
+//get my matches
+app.get('/matches/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    const snapshot = await AvailableMatch.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var matches = [];
+    for (let i = 0; i < list.length; i++) {
+        for (let j = 0; j < list[i].length; j++) {
+            if (list[i].participants[j] == username){
+                matches.push(list[i]);
+            }
+        }
+        
+    }
+    return res.send(matches);
+});
