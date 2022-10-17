@@ -269,26 +269,28 @@ app.post('/minvite', async(req, res) => {
 //accept match invite
 app.post('/acceptminvite', async(req, res) => {
     const id = req.body.id;
+    console.log(id)
     delete req.body.id;
 
     const snapshot = await MatchInvite.get();
-    const snapshot2 = await User.get();
+    const snapshot2 = await AvailableMatch.get();
     
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var id1;
     var matchid;
-    var matches;
+    var participants;
+    var user;
 
     for (let i = 0; i < list.length; i++) {
         if (list[i].id == id){
             matchid = list[i].matchid
-            const user = list[i].invited;
+            user = list[i].invited;
 
             for (let j = 0; j < list2.length; j++) {
-                if (list2[j].username == user){
-                    matches = list2[j].matches;
+                if (list2[j].id == matchid){
+                    participants = list2[j].participants;
                     id1 = list2[j].id;
                 }
             }
@@ -299,11 +301,11 @@ app.post('/acceptminvite', async(req, res) => {
         return res.status(418).send({msg: "Invalid Invite"}); 
     }
 
-    matches.push(matchid);
+    participants.push(user);
 
-    const data = {matches: matches}
+    const data = {participants: participants}
 
-    await User.doc(id1).update(data);
+    await AvailableMatch.doc(id1).update(data);
 
     await MatchInvite.doc(id).delete();
 
