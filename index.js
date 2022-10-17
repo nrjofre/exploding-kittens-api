@@ -301,7 +301,7 @@ app.post('/acceptminvite', async(req, res) => {
         return res.status(418).send({msg: "Invalid Invite"}); 
     }
 
-    participants.push()
+    participants.push(user)
 
     const data = {participants: participants}
 
