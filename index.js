@@ -220,3 +220,19 @@ app.post('/deletefinvite', async(req, res) => {
     await FriendInvite.doc(id).delete();
     return res.send({msg: "Invite Rejected"});      
 });
+
+//get invites
+app.get('/finvite/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    const snapshot = await FriendInvite.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var invites = [];
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].invited == username){
+            invites.push(list[i]);
+        }
+    }
+    return res.send(invites);
+});
