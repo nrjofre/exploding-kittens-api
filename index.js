@@ -246,7 +246,7 @@ app.post('/creatematch', async(req, res) => {
     const settings = req.body.settings;
     const participants = req.body.participants;
 
-    const data = {creator: creator, participants: participants,settings: settings}
+    const data = {creator: creator, participants: participants, settings: settings}
 
     await AvailableMatch.add(data);
 
@@ -280,7 +280,7 @@ app.post('/acceptminvite', async(req, res) => {
 
     var id1;
     var matchid;
-    var participants;
+    var participants = [];
     var user;
 
     for (let i = 0; i < list.length; i++) {
@@ -301,7 +301,7 @@ app.post('/acceptminvite', async(req, res) => {
         return res.status(418).send({msg: "Invalid Invite"}); 
     }
 
-    participants.push(user);
+    participants.push()
 
     const data = {participants: participants}
 
