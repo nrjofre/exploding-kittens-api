@@ -244,7 +244,9 @@ app.post('/creatematch', async(req, res) => {
     console.log(req.body);
     const creator = req.body.creator;
     const settings = req.body.settings;
-    const data = {creator: creator, settings: settings}
+    const participants = req.body.participants;
+
+    const data = {creator: creator, participants: participants,settings: settings}
 
     await AvailableMatch.add(data);
 
