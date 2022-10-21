@@ -15,6 +15,7 @@ const User = db.collection('Users')
 const FriendInvite = db.collection('FriendInvites')
 const AvailableMatch = db.collection('AvailableMatches')
 const MatchInvite = db.collection('MatchInvites')
+const Card = db.collection('Cards')
 
 //get all users
 app.get('/users', async(req, res) => {
@@ -369,4 +370,35 @@ app.get('/matches/:username', async(req, res) => {
         }  
     }
     return res.send(matches);
+});
+
+//get user cards
+app.get('/cards/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    const snapshot = await User.get();
+    const snapshot2 = await Card.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const listc = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var cards;
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            cards = list[i].cards;
+        }
+    }
+    if (cards == null){
+        return res.status(418).send({msg: "No cards"});
+    }
+
+    var list2 = [];
+    for (let i = 0; i < listc.length; i++) {
+        for (let j = 0; j < cards.length; j++) {
+            if (cards[j] == listc[i].id){
+                var card = listc[i];
+                list2.push(card)
+            }
+        }
+    }
+    return res.send(list2);
 });
