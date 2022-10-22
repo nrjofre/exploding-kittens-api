@@ -565,3 +565,18 @@ app.post('/playcard', async(req, res) => {
     await AvailableMatch.doc(id2).update(data2);
     return res.send({msg: `${username} played a ${spliced} card`});
 });
+
+//get a user
+app.get('/users/:username', async(req, res) => {
+    const {username} = req.params
+    const snapshot = await User.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    var selected_user;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            selected_user = list[i];
+        }
+    }
+    return res.send(selected_user);
+});
