@@ -404,14 +404,19 @@ app.get('/cards/:username', async(req, res) => {
 });
 
 //get participants
-app.get('/participants/:gamename', async(req, res) => {
+app.post('/participants/:gamename', async(req, res) => {
     console.log(req.params);
-    const { gamename } = req.params.gamename;
-    const { username } = req.body.username;
+    const { gamename } = req.params;
+    const username = req.body.username;
+
     const snapshot = await AvailableMatch.get();
+    const snapshotu = await User.get();
+
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const listu = snapshotu.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var match_participants = [];
+    
     for (let i = 0; i < list.length; i++) {
         if (list[i].gamename == gamename){
             match_participants = list[i].participants;
@@ -421,11 +426,19 @@ app.get('/participants/:gamename', async(req, res) => {
     var list2 = [];
     for (let i=0; i < match_participants.length; i++) {
         if (match_participants[i] != username)  {
-            console.log(match_participants)
             list2.push(match_participants[i]) 
         }
     }
-    return res.send(list2);
+    var list3 = [];
+    for (let i=0; i < listu.length; i++) {
+        for (let j=0; j < list2.length; j++){
+            if (list2[j] == listu[i].username)  {
+                list3.push(listu[i]);
+            }
+        }
+        
+    }
+    return res.send({paricipants: list3});
 });
 
 //get draw
@@ -468,4 +481,43 @@ app.get('/draw/:username', async(req, res) => {
 
 
     return res.send({msg: `user has drawn ${card}`});
+});
+
+//get draw5
+app.get('/draw5/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    const snapshot = await User.get();
+    const snapshot2 = await Card.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const listc = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var cards = []; // cartas que tiene el usuario
+    var id;
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            id = list[i].id;
+        }
+    }
+    var list2 = []; // cartas posibles para robar
+    for (let i = 0; i < listc.length; i++) {
+        list2.push(listc[i].id);
+    }
+    const n = 4 // cantidad n de cartas existentes modificar si se agregan cartas
+
+    var card;
+    for (let i = 0; i < 4;i++) {
+        while (card == null || card == "5VYvZ4k72Y2fbfEmGdiV"){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+            var random = Math.floor(Math.random() * n);
+            card = list2[random];
+        }
+        cards.push(card)
+        card = null;
+    }
+
+    cards.push("5VYvZ4k72Y2fbfEmGdiV")
+
+    data = {cards: cards}
+    await User.doc(id).update(data);
+    return res.send({msg: `${username} has drawn 5 cards`});
 });
