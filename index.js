@@ -438,7 +438,7 @@ app.post('/participants', async(req, res) => {
         }
         
     }
-    return res.send({paricipants: list3});
+    return res.send(list3);
 });
 
 //get draw
