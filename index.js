@@ -476,7 +476,7 @@ app.get('/draw/:username', async(req, res) => {
     }
     cards.push(card)
 
-    data = {cards: cards}
+    const data = {cards: cards}
     await User.doc(id).update(data);
 
 
@@ -517,7 +517,51 @@ app.get('/draw5/:username', async(req, res) => {
 
     cards.push("5VYvZ4k72Y2fbfEmGdiV")
 
-    data = {cards: cards}
+    const data = {cards: cards}
     await User.doc(id).update(data);
     return res.send({msg: `${username} has drawn 5 cards`});
+});
+
+//post playcard
+app.post('/playcard', async(req, res) => {
+    console.log(req.body);
+    const username  = req.body.username;
+    const played_card = req.body.card;
+    const gamename = req.body.gamename
+
+    const snapshot = await User.get();
+    const snapshot2 = await AvailableMatch.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var cards; // cartas que tiene el usuario
+    var id;
+    var id2;
+    var spliced;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            cards = list[i].cards;
+            id = list[i].id;
+        }
+    }
+
+    for (let i = 0; i < cards.length; i++) {
+        if (cards[i] == played_card) {
+            spliced = cards.splice(i,1);
+        }
+    }
+
+
+    for (let i = 0; i < list2.length; i++) {
+        if (list2[i].gamename == gamename){
+            id2 = list2[i].id;
+        }
+    }
+
+    const data = {cards: cards}
+    const data2 = {lastcard: spliced}
+    await User.doc(id).update(data);
+    await AvailableMatch.doc(id2).update(data2);
+    return res.send({msg: `${username} played a ${spliced} card`});
 });
