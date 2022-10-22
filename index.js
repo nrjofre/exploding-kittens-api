@@ -404,9 +404,9 @@ app.get('/cards/:username', async(req, res) => {
 });
 
 //get participants
-app.post('/participants/:gamename', async(req, res) => {
-    console.log(req.params);
-    const { gamename } = req.params;
+app.post('/participants', async(req, res) => {
+    console.log(req.body);
+    const gamename = req.body.gamename;
     const username = req.body.username;
 
     const snapshot = await AvailableMatch.get();
