@@ -541,15 +541,20 @@ app.post('/playcard', async(req, res) => {
     var id2;
     var spliced;
 
+    //console.log(list)
+
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
+            //console.log(list[i].cards)
             cards = list[i].cards;
             id = list[i].id;
         }
     }
+    
 
     for (let i = 0; i < cards.length; i++) {
-        if (cards[i] == played_card) {
+        
+        if (cards[i].id == played_card) {
             spliced = cards.splice(i,1);
         }
     }
@@ -560,6 +565,8 @@ app.post('/playcard', async(req, res) => {
             id2 = list2[i].id;
         }
     }
+
+    console.log(spliced)
 
     const data = {cards: cards}
     const data2 = {lastcard: spliced}
