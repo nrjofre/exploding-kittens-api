@@ -509,7 +509,7 @@ app.get('/draw5/:username', async(req, res) => {
 
     var card;
     for (let i = 0; i < 4;i++) {
-        while (card == null || card == "5VYvZ4k72Y2fbfEmGdiV" || card == "URntNGMaWx6ig4JDCdV7"){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+        while (card == null || card == "URntNGMaWx6ig4JDCdV7"){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
             var random = Math.floor(Math.random() * n);
             card = list2[random];
         }
