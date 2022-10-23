@@ -536,7 +536,7 @@ app.post('/playcard', async(req, res) => {
     console.log(req.body);
     const username  = req.body.username;
     const played_card = req.body.card;
-    const gamename = req.body.gamename
+    const gamename = req.body.gamename;
 
     const snapshot = await User.get();
     const snapshot2 = await AvailableMatch.get();
