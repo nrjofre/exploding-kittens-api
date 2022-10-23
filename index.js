@@ -566,10 +566,8 @@ app.post('/playcard', async(req, res) => {
         }
     }
 
-    console.log(spliced)
-
     const data = {cards: cards}
-    const data2 = {lastcard: spliced}
+    const data2 = {lastcard: spliced[0]}
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
     return res.send({msg: `${username} played a ${spliced} card`});
