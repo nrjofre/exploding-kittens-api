@@ -562,6 +562,7 @@ app.post('/playcard', async(req, res) => {
         
         if (cards[i].id == played_card) {
             spliced = cards.splice(i,1);
+            break;
         }
     }
 
