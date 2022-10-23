@@ -66,11 +66,18 @@ app.get('/notfriends/:username', async(req, res) => {
             friends = list[i].friends;
         }
     }
+    console.log(friends)
     if (friends == null){
         return res.status(418).send({msg: "User does not exist"});
     }
     else if(friends.length == 0){
-        return res.send(list);
+        var notfriends = list
+        for (let i = 0; i < notfriends.length; i++) {
+            if (notfriends[i].username == username){
+                notfriends.splice(i,1)
+            }
+        }
+        return res.send(notfriends);
     }
 
     var list2 = [];
@@ -545,7 +552,6 @@ app.post('/playcard', async(req, res) => {
 
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
-            //console.log(list[i].cards)
             cards = list[i].cards;
             id = list[i].id;
         }
