@@ -547,6 +547,7 @@ app.post('/playcard', async(req, res) => {
     var id;
     var id2;
     var spliced;
+    var turn;
 
     //console.log(list)
 
@@ -570,11 +571,14 @@ app.post('/playcard', async(req, res) => {
     for (let i = 0; i < list2.length; i++) {
         if (list2[i].gamename == gamename){
             id2 = list2[i].id;
+            turn = list2[i].turn;
         }
     }
 
+    turn += 1;
+
     const data = {cards: cards}
-    const data2 = {lastcard: spliced[0]}
+    const data2 = {lastcard: spliced[0], turn: turn}
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
     return res.send({msg: `${username} played a ${spliced} card`});
