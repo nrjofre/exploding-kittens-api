@@ -249,8 +249,10 @@ app.post('/creatematch', async(req, res) => {
     const creator = req.body.creator;
     const settings = req.body.settings;
     const participants = req.body.participants;
+    const lastcard = ""
+    const turn = 0
 
-    const data = {gamename: gamename,creator: creator, participants: participants, settings: settings}
+    const data = {gamename: gamename,creator: creator, participants: participants, settings: settings, lastcard, turn}
 
     await AvailableMatch.add(data);
 
@@ -579,4 +581,30 @@ app.get('/users/:username', async(req, res) => {
         }
     }
     return res.send(selected_user);
+});
+
+//get player turn index
+app.post('/myturn', async(req, res) => {
+    console.log(req.body);
+    const gamename = req.body.gamename;
+    const username = req.body.username;
+
+    const snapshot = await AvailableMatch.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var match_participants = [];
+    var index;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].gamename == gamename){
+            match_participants = list[i].participants;
+        }
+    }
+
+    for (let i=0; i < match_participants.length; i++) {
+        if (match_participants[i] == username)  {
+            index = i; 
+        }
+    }
+    return res.send({msg: index});
 });
