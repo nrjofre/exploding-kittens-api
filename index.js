@@ -560,7 +560,7 @@ app.get('/draw5/:username', async(req, res) => {
 app.post('/playcard', async(req, res) => {
     console.log(req.body);
     const username  = req.body.username;
-    const played_card = req.body.card;
+    const played_card = req.body.played_card;
     const gamename = req.body.gamename;
 
     const snapshot = await User.get();
@@ -573,24 +573,18 @@ app.post('/playcard', async(req, res) => {
     var id2;
     var spliced;
 
-    //console.log(list)
-
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
         }
     }
-    
-
     for (let i = 0; i < cards.length; i++) {
-        
-        if (cards[i].id == played_card) {
+        if (cards[i] == played_card) {
             spliced = cards.splice(i,1);
             break;
         }
     }
-
 
     for (let i = 0; i < list2.length; i++) {
         if (list2[i].gamename == gamename){
