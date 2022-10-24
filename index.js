@@ -546,7 +546,6 @@ app.get('/draw/:username', async(req, res) => {
         for (let i = 0; i < participants.length; i++) {
             if (participants[i] == username){
                 pos2 = i;
-                participants = list3[i].participants;
             }
         }
 
