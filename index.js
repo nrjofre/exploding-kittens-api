@@ -512,7 +512,7 @@ app.get('/draw/:username', async(req, res) => {
 
     var card;
 
-    while (card == null || card == "5VYvZ4k72Y2fbfEmGdiV"){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+    while (card == null){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
         var random = Math.floor(Math.random() * n);
         card = list2[random];
     }
@@ -528,8 +528,6 @@ app.get('/draw/:username', async(req, res) => {
     var idgame;
     var participants;
     var pos2;
-
-    card = "URntNGMaWx6ig4JDCdV7"
 
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
         cards.splice(pos,1)
@@ -615,7 +613,7 @@ app.get('/draw5/:username', async(req, res) => {
 
     var card;
     for (let i = 0; i < 4;i++) {
-        while (card == null || card == "URntNGMaWx6ig4JDCdV7"){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+        while (card == null || card == "URntNGMaWx6ig4JDCdV7" || card == "5VYvZ4k72Y2fbfEmGdiV" ){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
             var random = Math.floor(Math.random() * n);
             card = list2[random];
         }
@@ -710,6 +708,10 @@ app.post('/myturn', async(req, res) => {
         if (match_participants[i] == username)  {
             index = i; 
         }
+    }
+
+    if (index == null){
+        return res.send({msg: "null"});
     }
     return res.send({msg: index});
 });
