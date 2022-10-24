@@ -259,6 +259,20 @@ app.post('/creatematch', async(req, res) => {
     const lastcard = ""
     const turn = 0
 
+    const snapshot = await User.get();
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var uid;
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == creator){
+            uid = list[i].id; 
+            break
+        }
+    }
+    const datauser = {lastgame: gamename}
+
+    await User.doc(uid).update(datauser);
+
     const data = {gamename: gamename,creator: creator, participants: participants, settings: settings, lastcard, turn}
 
     await AvailableMatch.add(data);
@@ -301,14 +315,17 @@ app.post('/acceptminvite', async(req, res) => {
 
     const snapshot = await MatchInvite.get();
     const snapshot2 = await AvailableMatch.get();
+    const snapshot3 = await User.get();
     
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var id1;
     var matchid;
     var participants = [];
     var user;
+    var gamename;
 
     for (let i = 0; i < list.length; i++) {
         if (list[i].id == id){
@@ -319,6 +336,7 @@ app.post('/acceptminvite', async(req, res) => {
                 if (list2[j].id == matchid){
                     participants = list2[j].participants;
                     id1 = list2[j].id;
+                    gamename = list2[j].gamename
                 }
             }
         }
@@ -330,8 +348,17 @@ app.post('/acceptminvite', async(req, res) => {
 
     participants.push(user)
 
-    const data = {participants: participants}
+    var uid;
+    for (let i = 0; i < list3.length; i++) {
+        if (list[i].username == user){
+            uid = list[i].id; 
+            break
+        }
+    }
+    const datauser = {lastgame: gamename}
+    await User.doc(uid).update(datauser);
 
+    const data = {participants: participants}
     await AvailableMatch.doc(id1).update(data);
 
     await MatchInvite.doc(id).delete();
@@ -454,18 +481,24 @@ app.post('/participants', async(req, res) => {
 app.get('/draw/:username', async(req, res) => {
     console.log(req.params);
     const { username } = req.params;
+    
     const snapshot = await User.get();
     const snapshot2 = await Card.get();
+    const snapshot3 = await AvailableMatch.get();
+
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const listc = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
+    var gamename;
 
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
+            gamename = list[i].lastgame
         }
     }
     if (cards == null){
@@ -486,23 +519,51 @@ app.get('/draw/:username', async(req, res) => {
     }
 
     var defuse;
+    var pos;
     for (let i = 0; i < cards.length; i++) {
         if (cards[i] ==  "5VYvZ4k72Y2fbfEmGdiV"){
             defuse = 1;
+            pos = i
         }
     }
+    var idgame;
+    var participants;
+    var pos2;
 
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
+        cards.splice(pos,1)
+        const data = {cards: cards}
+        await User.doc(id).update(data);
         return res.send({msg: "Using Defuse"});
     }
     else if ((card == "URntNGMaWx6ig4JDCdV7" && defuse == null)){
+        for (let i = 0; i < list3.length; i++) {
+            if (list3[i].gamename == gamename){
+                idgame = list3[i].id;
+                participants = list3[i].participants;
+            }
+        }
+
+        for (let i = 0; i < participants.length; i++) {
+            if (participants[i] == username){
+                pos2 = i;
+                participants = list3[i].participants;
+            }
+        }
+
+        participants.splice(pos2,1)
+        const data1 = {participants: participants}
+        await AvailableMatch.doc(idgame).update(data1);
+        
+        const data = {cards: cards, lastgame: ""}
+        await User.doc(id).update(data);
         return res.send({msg: "Lose"});
     }
+
     cards.push(card)
 
     const data = {cards: cards}
     await User.doc(id).update(data);
-
 
     return res.send({msg: `user has drawn ${card}`});
 });
