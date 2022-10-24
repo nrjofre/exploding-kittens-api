@@ -775,12 +775,12 @@ app.get('/win/:username', async(req, res) => {
 
     for (let i = 0; i < list2.length; i++) {
         if (list2[i].gamename == gamename){
-            id = list2[i].id;
+            id2 = list2[i].id;
         }
     }
 
     const data = {wins: wins, total_matches: totmatch, winrate: winrate}
     await User.doc(id).update(data);
-    await AvailableMatch.doc(id).delete();
+    await AvailableMatch.doc(id2).delete();
     return res.send({msg: "User Has won, stats updated game deleted"});
 });
