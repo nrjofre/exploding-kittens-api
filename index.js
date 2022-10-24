@@ -488,6 +488,8 @@ app.get('/draw/:username', async(req, res) => {
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const listc = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    //stats
+    const list4 = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
@@ -528,6 +530,17 @@ app.get('/draw/:username', async(req, res) => {
     var idgame;
     var participants;
     var pos2;
+    //stats
+    var id3;
+    var iloses;
+
+    //stats asignar variables
+    for (let i = 0; i < list4.length; i++) {
+        if (list4[i].username == username){
+            id3 = list4[i].id;
+            iloses = list4[i].loses;
+        }
+    }
 
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
         cards.splice(pos,1)
@@ -549,6 +562,13 @@ app.get('/draw/:username', async(req, res) => {
             }
         }
 
+        //stats actualizar usuario
+        iloses += 1;   
+        
+        const data_loses = {loses: iloses}
+        console.log(data_loses)
+        await User.doc(id3).update(data_loses)
+
         participants.splice(pos2,1)
         const data1 = {participants: participants}
         await AvailableMatch.doc(idgame).update(data1);
@@ -560,9 +580,9 @@ app.get('/draw/:username', async(req, res) => {
 
     cards.push(card)
 
+    
     const data = {cards: cards}
     await User.doc(id).update(data);
-
     return res.send({msg: `user has drawn ${card}`});
 });
 
