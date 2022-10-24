@@ -578,7 +578,7 @@ app.get('/draw/:username', async(req, res) => {
     else if ((lastcard == "vvqEBQusOvfprXO7eB7S")){
         var card2;
 
-        while (card == null){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+        while (card2 == null){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
             var random2 = Math.floor(Math.random() * n);
             card2 = list2[random2];
         }
