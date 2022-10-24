@@ -530,6 +530,7 @@ app.get('/draw/:username', async(req, res) => {
     var idgame;
     var participants;
     var pos2;
+
     //stats
     var id3;
     var iloses;
@@ -657,9 +658,10 @@ app.post('/playcard', async(req, res) => {
     
     const snapshot = await User.get();
     const snapshot2 = await AvailableMatch.get();
+    const snapshot3 = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
-    const list3 = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
@@ -694,7 +696,6 @@ app.post('/playcard', async(req, res) => {
         if (list3[i].username == username){
             id3 = list3[i].id;
             idefuses = list3[i].defuses;
-            console.log(defuses)
         }
     }
 
@@ -706,7 +707,7 @@ app.post('/playcard', async(req, res) => {
     const data_defuses = {defuses: idefuses}
     const data = {cards: cards}
     const data2 = {lastcard: played_card}
-    await User.doc(id3).update(data_defuses)
+    await User.doc(id3).update(data_defuses);
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
     return res.send({msg: `${username} played a ${played_card} card`});
