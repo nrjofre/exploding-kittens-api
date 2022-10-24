@@ -634,23 +634,27 @@ app.post('/playcard', async(req, res) => {
     const username  = req.body.username;
     const played_card = req.body.played_card;
     const gamename = req.body.gamename;
-
+    
     const snapshot = await User.get();
     const snapshot2 = await AvailableMatch.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list3 = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
     var id2;
+    var id3;
     var spliced;
-
+    var idefuses;
+    
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
         }
     }
+
     for (let i = 0; i < cards.length; i++) {
         if (cards[i] == played_card) {
             spliced = cards.splice(i,1);
@@ -664,8 +668,25 @@ app.post('/playcard', async(req, res) => {
         }
     }
 
+    
+        //actualizar usuario
+    for (let i = 0; i < list3.length; i++) {
+        if (list3[i].username == username){
+            id3 = list3[i].id;
+            idefuses = list3[i].defuses;
+            console.log(defuses)
+        }
+    }
+
+    if (played_card == "5VYvZ4k72Y2fbfEmGdiV"){
+        //actualizar usuario
+        idefuses += 1;   
+    }
+    
+    const data_defuses = {defuses: idefuses}
     const data = {cards: cards}
     const data2 = {lastcard: played_card}
+    await User.doc(id3).update(data_defuses)
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
     return res.send({msg: `${username} played a ${played_card} card`});
