@@ -674,12 +674,18 @@ app.post('/playcard', async(req, res) => {
     var id2;
     var spliced;
     var idefuses;
+    var shuffles;
+    var attacks;
+    var skips;
     
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
             idefuses = list[i].defuses;
+            shuffles = list[i].shuffles;
+            attacks = list[i].attacks;
+            skips = list[i].skips;
         }
     }
 
@@ -703,13 +709,18 @@ app.post('/playcard', async(req, res) => {
         idefuses += 1;   
     }
     else if (played_card == "PHKvNq2afTrKUHYznI1W"){ // skip
+        skips += 1;
         turn += 1;
     }
     else if (played_card == "vvqEBQusOvfprXO7eB7S"){ //attack
+        attacks += 1;
         turn += 1;
     }
+    else if (played_card == "xwFAlcipGg6wXHryomoG"){ //shuffle
+        shuffles += 1;
+    }
     
-    const data = {cards: cards, defuses: idefuses}
+    const data = {cards: cards, defuses: idefuses, skips: skips, attacks: attacks, shuffles: shuffles}
     const data2 = {lastcard: played_card, turn: turn}
 
     await User.doc(id).update(data);
