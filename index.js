@@ -349,8 +349,8 @@ app.post('/acceptminvite', async(req, res) => {
 
     var uid;
     for (let i = 0; i < list3.length; i++) {
-        if (list[i].username == user){
-            uid = list[i].id; 
+        if (list3[i].username == user){
+            uid = list3[i].id; 
             break
         }
     }
