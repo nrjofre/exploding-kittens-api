@@ -489,17 +489,24 @@ app.get('/draw/:username', async(req, res) => {
     const listc = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     //stats
-    const list4 = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
     var gamename;
+    var iloses;
+    var totmatch;
+    var winrate;
+    var wins;
 
     for (let i = 0; i < list.length; i++) {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
-            gamename = list[i].lastgame
+            gamename = list[i].lastgame;
+            iloses = list[i].loses;
+            totmatch = list[i].total_matches;
+            winrate = list[i].winrate;
+            wins = list[i].wins;
         }
     }
     if (cards == null){
@@ -531,18 +538,6 @@ app.get('/draw/:username', async(req, res) => {
     var participants;
     var pos2;
 
-    //stats
-    var id3;
-    var iloses;
-
-    //stats asignar variables
-    for (let i = 0; i < list4.length; i++) {
-        if (list4[i].username == username){
-            id3 = list4[i].id;
-            iloses = list4[i].loses;
-        }
-    }
-
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
         cards.splice(pos,1)
         const data = {cards: cards}
@@ -564,17 +559,15 @@ app.get('/draw/:username', async(req, res) => {
         }
 
         //stats actualizar usuario
-        iloses += 1;   
-        
-        const data_loses = {loses: iloses}
-        console.log(data_loses)
-        await User.doc(id3).update(data_loses)
+        iloses += 1;
+        totmatch += 1;
+        winrate = (wins / totmatch)*100
 
         participants.splice(pos2,1)
         const data1 = {participants: participants}
         await AvailableMatch.doc(idgame).update(data1);
         
-        const data = {cards: cards, lastgame: ""}
+        const data = {cards: cards, lastgame: "", loses: iloses, winrate: winrate, total_matches: totmatch}
         await User.doc(id).update(data);
         return res.send({msg: "Lose"});
     }
@@ -658,10 +651,8 @@ app.post('/playcard', async(req, res) => {
     
     const snapshot = await User.get();
     const snapshot2 = await AvailableMatch.get();
-    const snapshot3 = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
     const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
-    const list3 = snapshot3.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
     var cards; // cartas que tiene el usuario
     var id;
@@ -674,6 +665,7 @@ app.post('/playcard', async(req, res) => {
         if (list[i].username == username){
             cards = list[i].cards;
             id = list[i].id;
+            idefuses = list[i].defuses;
         }
     }
 
@@ -690,26 +682,17 @@ app.post('/playcard', async(req, res) => {
         }
     }
 
-    
-        //actualizar usuario
-    for (let i = 0; i < list3.length; i++) {
-        if (list3[i].username == username){
-            id3 = list3[i].id;
-            idefuses = list3[i].defuses;
-        }
-    }
-
     if (played_card == "5VYvZ4k72Y2fbfEmGdiV"){
         //actualizar usuario
         idefuses += 1;   
     }
     
-    const data_defuses = {defuses: idefuses}
-    const data = {cards: cards}
+    const data = {cards: cards, defuses: idefuses}
     const data2 = {lastcard: played_card}
-    await User.doc(id3).update(data_defuses);
+
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
+
     return res.send({msg: `${username} played a ${played_card} card`});
 });
 
@@ -756,4 +739,54 @@ app.post('/myturn', async(req, res) => {
         return res.send({msg: "null"});
     }
     return res.send({msg: index});
+});
+
+//delete match
+app.get('/deletematch/:matchid', async(req, res) => {
+    console.log(req.params);
+    const id = req.params;
+    await AvailableMatch.doc(id).delete();
+    return res.send({msg: "Match Deleted"});
+});
+
+// update after win
+app.get('/win/:username', async(req, res) => {
+    console.log(req.params);
+    const { username } = req.params;
+    
+    const snapshot = await User.get();
+    const snapshot2 = await AvailableMatch.get();
+
+    const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+    const list2 = snapshot2.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
+
+    var id;
+    var totmatch;
+    var winrate;
+    var wins;
+
+    for (let i = 0; i < list.length; i++) {
+        if (list[i].username == username){
+            id = list[i].id;
+            totmatch = list[i].total_matches;
+            winrate = list[i].winrate;
+            wins = list[i].wins;
+            gamename = list[i].lastgame;
+        }
+    }
+ 
+    wins += 1;
+    totmatch += 1;
+    winrate = (wins/totmatch)*100;
+
+    for (let i = 0; i < list2.length; i++) {
+        if (list2[i].gamename == gamename){
+            id = list2[i].id;
+        }
+    }
+
+    const data = {wins: wins, total_matches: totmatch, winrate: winrate}
+    await User.doc(id).update(data);
+    await AvailableMatch.doc(id).delete();
+    return res.send({msg: `user has drawn ${card}`});
 });
