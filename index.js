@@ -404,6 +404,8 @@ app.get('/matches/:username', async(req, res) => {
             }
         }  
     }
+
+
     return res.send(matches);
 });
 //                           ENTREGA FINAL
@@ -741,14 +743,6 @@ app.post('/myturn', async(req, res) => {
     return res.send({msg: index});
 });
 
-//delete match
-app.get('/deletematch/:matchid', async(req, res) => {
-    console.log(req.params);
-    const id = req.params;
-    await AvailableMatch.doc(id).delete();
-    return res.send({msg: "Match Deleted"});
-});
-
 // update after win
 app.get('/win/:username', async(req, res) => {
     console.log(req.params);
@@ -788,5 +782,5 @@ app.get('/win/:username', async(req, res) => {
     const data = {wins: wins, total_matches: totmatch, winrate: winrate}
     await User.doc(id).update(data);
     await AvailableMatch.doc(id).delete();
-    return res.send({msg: `user has drawn ${card}`});
+    return res.send({msg: "User Has won, stats updated game deleted"});
 });
