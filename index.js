@@ -625,7 +625,7 @@ app.get('/draw5/:username', async(req, res) => {
     for (let i = 0; i < listc.length; i++) {
         list2.push(listc[i].id);
     }
-    const n = 5 // cantidad n de cartas existentes modificar si se agregan cartas
+    const n = 6 // cantidad n de cartas existentes modificar si se agregan cartas
 
     var card;
     for (let i = 0; i < 4;i++) {
