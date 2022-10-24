@@ -529,6 +529,8 @@ app.get('/draw/:username', async(req, res) => {
     var participants;
     var pos2;
 
+    card = "URntNGMaWx6ig4JDCdV7"
+
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
         cards.splice(pos,1)
         const data = {cards: cards}
