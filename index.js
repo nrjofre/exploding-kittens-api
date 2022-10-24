@@ -773,6 +773,7 @@ app.get('/win/:username', async(req, res) => {
     totmatch += 1;
     winrate = (wins/totmatch)*100;
 
+    var id2;
     for (let i = 0; i < list2.length; i++) {
         if (list2[i].gamename == gamename){
             id2 = list2[i].id;
