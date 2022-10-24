@@ -259,6 +259,9 @@ app.post('/creatematch', async(req, res) => {
     const lastcard = ""
     const turn = 0
 
+    const data = {gamename: gamename,creator: creator, participants: participants, settings: settings, lastcard, turn}
+    await AvailableMatch.add(data);
+
     const snapshot = await User.get();
     const list = snapshot.docs.map((doc) => ({ id:doc.id, ...doc.data() }));
 
@@ -272,10 +275,6 @@ app.post('/creatematch', async(req, res) => {
     const datauser = {lastgame: gamename}
 
     await User.doc(uid).update(datauser);
-
-    const data = {gamename: gamename,creator: creator, participants: participants, settings: settings, lastcard, turn}
-
-    await AvailableMatch.add(data);
 
     return res.send({msg: "Match Created"});
 });
