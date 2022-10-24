@@ -625,7 +625,7 @@ app.get('/draw5/:username', async(req, res) => {
     for (let i = 0; i < listc.length; i++) {
         list2.push(listc[i].id);
     }
-    const n = 4 // cantidad n de cartas existentes modificar si se agregan cartas
+    const n = 5 // cantidad n de cartas existentes modificar si se agregan cartas
 
     var card;
     for (let i = 0; i < 4;i++) {
@@ -659,7 +659,6 @@ app.post('/playcard', async(req, res) => {
     var cards; // cartas que tiene el usuario
     var id;
     var id2;
-    var id3;
     var spliced;
     var idefuses;
     
@@ -678,9 +677,11 @@ app.post('/playcard', async(req, res) => {
         }
     }
 
+    var turn;
     for (let i = 0; i < list2.length; i++) {
         if (list2[i].gamename == gamename){
             id2 = list2[i].id;
+            turn =list2[i].turn
         }
     }
 
@@ -688,8 +689,14 @@ app.post('/playcard', async(req, res) => {
         //actualizar usuario
         idefuses += 1;   
     }
+    else if (played_card == "PHKvNq2afTrKUHYznI1W"){ // skip
+        turn += 1;
+    }
+    else if (played_card == "vvqEBQusOvfprXO7eB7S"){ //attack
+        turn += 1;
+    }
     
-    const data = {cards: cards, defuses: idefuses}
+    const data = {cards: cards, defuses: idefuses, turn: turn}
     const data2 = {lastcard: played_card}
 
     await User.doc(id).update(data);
