@@ -696,8 +696,8 @@ app.post('/playcard', async(req, res) => {
         turn += 1;
     }
     
-    const data = {cards: cards, defuses: idefuses, turn: turn}
-    const data2 = {lastcard: played_card}
+    const data = {cards: cards, defuses: idefuses}
+    const data2 = {lastcard: played_card, turn: turn}
 
     await User.doc(id).update(data);
     await AvailableMatch.doc(id2).update(data2);
