@@ -484,6 +484,20 @@ app.get('/draw/:username', async(req, res) => {
         var random = Math.floor(Math.random() * n);
         card = list2[random];
     }
+
+    var defuse;
+    for (let i = 0; i < cards.length; i++) {
+        if (cards[i] ==  "5VYvZ4k72Y2fbfEmGdiV"){
+            defuse = 1;
+        }
+    }
+
+    if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
+        return res.send({msg: "Using Defuse"});
+    }
+    else if ((card == "URntNGMaWx6ig4JDCdV7" && defuse == null)){
+        return res.send({msg: "Lose"});
+    }
     cards.push(card)
 
     const data = {cards: cards}
@@ -512,7 +526,6 @@ app.get('/drawgame/:gamename', async(req, res) => {
 
     const data = {turn: turn}
     await AvailableMatch.doc(id).update(data);
-
 
     return res.send({msg: "next turn"});
 });
