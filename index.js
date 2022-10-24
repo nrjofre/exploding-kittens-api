@@ -519,7 +519,7 @@ app.get('/draw/:username', async(req, res) => {
     for (let i = 0; i < listc.length; i++) {
         list2.push(listc[i].id);
     }
-    const n = 4 // cantidad n de cartas existentes modificar si se agregan cartas
+    const n = 6 // cantidad n de cartas existentes modificar si se agregan cartas
 
     var card;
 
@@ -539,6 +539,15 @@ app.get('/draw/:username', async(req, res) => {
     var idgame;
     var participants;
     var pos2;
+    var lastcard;
+
+    for (let i = 0; i < list3.length; i++) {
+        if (list3[i].gamename == gamename){
+            idgame = list3[i].id;
+            participants = list3[i].participants;
+            lastcard = list3[i].lastcard;
+        }
+    }
 
     if (card == "URntNGMaWx6ig4JDCdV7" && defuse == 1){
         cards.splice(pos,1)
@@ -547,13 +556,6 @@ app.get('/draw/:username', async(req, res) => {
         return res.send({msg: "Using Defuse"});
     }
     else if ((card == "URntNGMaWx6ig4JDCdV7" && defuse == null)){
-        for (let i = 0; i < list3.length; i++) {
-            if (list3[i].gamename == gamename){
-                idgame = list3[i].id;
-                participants = list3[i].participants;
-            }
-        }
-
         for (let i = 0; i < participants.length; i++) {
             if (participants[i] == username){
                 pos2 = i;
@@ -573,9 +575,20 @@ app.get('/draw/:username', async(req, res) => {
         await User.doc(id).update(data);
         return res.send({msg: "Lose"});
     }
+    else if ((lastcard == "vvqEBQusOvfprXO7eB7S")){
+        var card2;
+
+        while (card == null){ // ese id es el id de la carta defuse, la carta defuse no se puede repartir
+            var random2 = Math.floor(Math.random() * n);
+            card2 = list2[random2];
+        }
+        cards.push(card)
+        const data = {cards: cards}
+        await User.doc(id).update(data);
+        return res.send({msg: "Draw 2"});
+    }
 
     cards.push(card)
-
     
     const data = {cards: cards}
     await User.doc(id).update(data);
